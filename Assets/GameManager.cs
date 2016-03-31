@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;  
 
-enum TILE
+enum e_Tile
 {
 	TERRAIN,
 	OOB
@@ -14,17 +14,17 @@ enum TILE
 public class GameManager : MonoBehaviour {
 
 	public string map;
-	private List<TILE> tiles;
+	private List<e_Tile> tiles;
 
 	// Use this for initialization
 	void Start () {
-
+		string file = Application.dataPath + "\\" + map;
 		try
 		{
 			string line;
-			tiles = new List<TILE>();
+			tiles = new List<e_Tile>();
 
-			StreamReader theReader = new StreamReader(map, Encoding.Default);
+			StreamReader theReader = new StreamReader(file, Encoding.Default);
 
 			using (theReader)
 			{
@@ -41,11 +41,11 @@ public class GameManager : MonoBehaviour {
 							{
 								if(c == '.')
 								{
-									tiles.Add(TILE.TERRAIN);
+									tiles.Add(e_Tile.TERRAIN);
 								}
 								else if (c == 'T')
 								{
-									tiles.Add(TILE.OOB);
+									tiles.Add(e_Tile.OOB);
 								}
 							}
 						}
