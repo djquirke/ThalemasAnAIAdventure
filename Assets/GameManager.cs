@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using System.Text;
 using System.IO;  
 
@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour {
 
 	public string map;
 	private List<e_Tile> tiles;
+	private Stopwatch last_game_tick = new Stopwatch();
+	private static int GAME_TICK = 500;
 
 	// Use this for initialization
 	void Start () {
@@ -53,16 +55,25 @@ public class GameManager : MonoBehaviour {
 				}
 				while (line != null);
 				theReader.Close();
-				Debug.Log(tiles.Count);
+				UnityEngine.Debug.Log(tiles.Count);
 			}
+			last_game_tick.Start();
 		}
 		catch (IOException e)
 		{
+			UnityEngine.Debug.Log("Error loading map file at: " + file);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if(last_game_tick.ElapsedMilliseconds >= GAME_TICK)
+		{
+			UnityEngine.Debug.Log("Tick");
+			last_game_tick.Reset();
+			last_game_tick.Start();
+
+			//Update entities
+		}
 	}
 }
