@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ResourceTile : MonoBehaviour {
+public class ResourceTile : Entity {
 
 	private e_Resource resource;
 	private int resource_remaining = 5;
@@ -30,7 +30,7 @@ public class ResourceTile : MonoBehaviour {
 		return resource;
 	}
 
-	public void GameTick()
+	public override void GameTick()
 	{
 		time_since_last_replenish++;
 		if (time_since_last_replenish >= time_to_replenish) {
