@@ -21,19 +21,33 @@ struct s_Tile
 		tile_type = type;
 		this.pos = pos;
 	}
+
+	public e_Tile getTileType() {
+		return tile_type;
+	}
+
+	public Vector2 getPos() {
+		return pos;
+	}
 }
 
 public class GameManager : MonoBehaviour {
 
 	public string map;
+	public Texture terrain_texture;
+	public Texture oob_texture;
+
 	private List<s_Tile> tiles;
 	private Stopwatch last_game_tick = new Stopwatch();
 	private static int GAME_TICK = 500;
+	private int map_width, map_height;
 
 	private List<Entity> entities;//people, resource tiles, buildings
 
 	// Use this for initialization
 	void Start () {
+		entities = new List<Entity> ();
+
 		string file = Application.dataPath + "\\" + map;
 		try
 		{
@@ -52,6 +66,8 @@ public class GameManager : MonoBehaviour {
 
 					if (line != null)
 					{
+						map_width = line.Length;
+
 						char[] entries = line.ToCharArray();
 						if (entries.Length > 0)
 						{
@@ -73,6 +89,7 @@ public class GameManager : MonoBehaviour {
 					counter++;
 				}
 				while (line != null);
+				map_height = counter - 1;
 				theReader.Close();
 			}
 			last_game_tick.Start();
@@ -101,6 +118,30 @@ public class GameManager : MonoBehaviour {
 			foreach(Entity entity in entities)
 			{
 				entity.GameTick();
+			}
+		}
+	}
+
+	void OnGUI()
+	{
+		foreach (s_Tile tile in tiles) {
+			Vector2 pos = tile.getPos();
+
+			switch (tile.getTileType()) {
+			case e_Tile.OOB:
+				if(oob_texture)
+				{
+					GUI.DrawTexture(new Rect(pos.x * oob_texture.width, pos.y * oob_texture.height, oob_texture.width, oob_texture.height), oob_texture);
+				}
+				break;
+			case e_Tile.TERRAIN:
+				if(terrain_texture)
+				{
+					GUI.DrawTexture(new Rect(pos.x * terrain_texture.width, pos.y * terrain_texture.height, terrain_texture.width, terrain_texture.height), terrain_texture);
+				}
+				break;
+			default:
+			break;
 			}
 		}
 	}
