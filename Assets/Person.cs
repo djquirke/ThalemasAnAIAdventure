@@ -13,15 +13,29 @@ public enum PersonType
 	RIFLEMAN
 };
 
-public class Person 
+public enum ToolType
+{
+	AXE,
+	CART, 
+	RIFFLE,
+	NONE
+}
+
+public class Person : IStorage
 {
 	private bool alive;
 	private PersonType type;
+	private ToolType tool;
+	private Storage storage;
+	private bool has_cart;
+	private int money;
 
 	public Person()
 	{
 		alive = true;
 		type = PersonType.LABOURER;
+		tool = ToolType.NONE;
+		storage = new Storage (1, 1);
 	}
 
 	public PersonType Type 
@@ -34,6 +48,32 @@ public class Person
 	{ 
 		get { return alive;} 
 		private set { alive = value;}
+	}
+
+	public ToolType Tool 
+	{
+		get { return tool;}
+		set { tool = value;}
+	}
+
+	public Storage PersonStore 
+	{
+		get { return storage;}
+	}
+
+	public bool PersonHasCart 
+	{
+		get { return has_cart;}
+		set 
+		{ 
+			has_cart = value;
+			UpdateStorageSize();
+		}
+	}
+
+	public int Money 
+	{
+		get { return money;}
 	}
 		
 	public void Attack(Person other)
@@ -58,5 +98,15 @@ public class Person
 				}
 			}
 		}
+	}
+
+	public void UpdateMoney(int amount)
+	{
+		money += amount;
+	}
+
+	private void UpdateStorageSize()
+	{
+		storage = has_cart ? new Storage(5, 5) : new Storage(1, 1);
 	}
 }
