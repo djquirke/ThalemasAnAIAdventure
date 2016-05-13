@@ -49,6 +49,59 @@ public class WorkerRequirement
 
 }
 
+public interface IProduction
+{
+    int TimeToProduce
+    {
+        get;
+    }
+
+    //TODO: Tiles have to be done by something other than positiion
+    bool CanProduce(IStorage ResourceStore, Vector2 TilePosition);
+
+    bool Produce(IStorage ResourceStore, Vector2 TilePosition);
+}
+
+public class SchoolProduction : ScriptableObject, IProduction
+{
+    public int TimeRequired = 10;
+    public int TimeToProduce
+    {
+        get { return TimeRequired; }
+    }
+
+    bool CanProduce(IStorage ResourceStore, Vector2 TilePosition)
+    {
+        //TODO: Need to check what workers are on the tile
+
+        //Then we'll
+        return false;
+    }
+
+    bool Produce(IStorage ResourceStore, Vector2 TilePosition)
+    {
+        bool Produced = CanProduce(ResourceStore, TilePosition);
+
+        if(Produced)
+        {
+
+        }
+
+        return Produced;
+    }
+}
+
+public class BuildingProduction : ScriptableObject
+{
+    public int TimeToProdcue = 10;
+
+    public List<ResourceRequirement> ResourcesRequired = new List<ResourceRequirement>();
+    public List<WorkerRequirement> WorkersRequired = new List<WorkerRequirement>();
+
+    public List<ResourceRequirement> ResourcesProduced = new List<ResourceRequirement>();
+    
+}
+
 //TODO: Add tiles bitmask, The building action bit (i.e. resource requirements, worker requirements, and then something is produced)
 public class BuildingBlueprint : ScriptableObject
 {
