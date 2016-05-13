@@ -32,12 +32,31 @@ public class BuildingSite : Entity, IStorage
         return HaveMaterials;
     }
 
+    public bool HaveNeededWorkers()
+    {
+        bool HaveWorkers = true;
+
+        foreach(WorkerRequirement WorkersNeeded in BuildingBlueprints.WorkersRequired)
+        {
+            //TODO: Have to have way to check which persons are on the building sites tile
+        }
+
+        return HaveWorkers;
+    }
+
+    public bool HasEnoughRoom()
+    {
+        //TODO: Have some way of checking the tiles around building site
+        //Building site will be be top left corner of building
+        throw new System.NotImplementedException();
+    }
+
     //Checks to see 
     public bool CanBuild()
     {
         //Will also need to check the builders, can't decide how to do this yet, will check with group on Friday
         //TODO: Will also need to check there's enough space on the map
-        return HaveNeededMaterials();
+        return HaveNeededMaterials() && HaveNeededWorkers();
     }
 
     // Use this for initialization
