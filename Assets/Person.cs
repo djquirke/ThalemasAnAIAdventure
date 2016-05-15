@@ -30,6 +30,12 @@ public class Person : IStorage
 	private bool has_cart;
 	private int money;
 
+	
+	public Storage Store
+	{
+		get { return storage; }
+	}
+
 	public Person()
 	{
 		alive = true;

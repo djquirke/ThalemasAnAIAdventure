@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.IO;  
 
+//TODO: rename to tiletype, much more suitable
 enum e_Tile
 {
 	TERRAIN,
@@ -34,8 +35,8 @@ struct s_Tile
 public class GameManager : MonoBehaviour {
 
 	public string map;
-	public Texture terrain_texture;
-	public Texture oob_texture;
+	public GameObject terrain_prefab;
+	public GameObject oob_prefab;
 
 	private List<s_Tile> tiles;
 	private Stopwatch last_game_tick = new Stopwatch();
@@ -77,11 +78,13 @@ public class GameManager : MonoBehaviour {
 								{
 									s_Tile temp = new s_Tile(e_Tile.TERRAIN, new Vector2(i, counter));
 									tiles.Add(temp);
+									Instantiate(terrain_prefab, new Vector3(i, 0.5f, counter), new Quaternion());
 								}
 								else if (entries[i] == 'T')
 								{
 									s_Tile temp = new s_Tile(e_Tile.OOB, new Vector2(i, counter));
 									tiles.Add(temp);
+									Instantiate(oob_prefab, new Vector3(i, 0.5f, counter), new Quaternion());
 								}
 							}
 						}
@@ -110,7 +113,7 @@ public class GameManager : MonoBehaviour {
 
 		if(last_game_tick.ElapsedMilliseconds >= GAME_TICK)
 		{
-			UnityEngine.Debug.Log("Tick");
+			//UnityEngine.Debug.Log("Tick");
 			last_game_tick.Reset();
 			last_game_tick.Start();
 
@@ -118,30 +121,6 @@ public class GameManager : MonoBehaviour {
 			foreach(Entity entity in entities)
 			{
 				entity.GameTick();
-			}
-		}
-	}
-
-	void OnGUI()
-	{
-		foreach (s_Tile tile in tiles) {
-			Vector2 pos = tile.getPos();
-
-			switch (tile.getTileType()) {
-			case e_Tile.OOB:
-				if(oob_texture)
-				{
-					GUI.DrawTexture(new Rect(pos.x * oob_texture.width, pos.y * oob_texture.height, oob_texture.width, oob_texture.height), oob_texture);
-				}
-				break;
-			case e_Tile.TERRAIN:
-				if(terrain_texture)
-				{
-					GUI.DrawTexture(new Rect(pos.x * terrain_texture.width, pos.y * terrain_texture.height, terrain_texture.width, terrain_texture.height), terrain_texture);
-				}
-				break;
-			default:
-			break;
 			}
 		}
 	}

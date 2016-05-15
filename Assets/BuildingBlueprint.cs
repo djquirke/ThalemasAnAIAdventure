@@ -70,7 +70,7 @@ public class SchoolProduction : ScriptableObject, IProduction
         get { return TimeRequired; }
     }
 
-    bool CanProduce(IStorage ResourceStore, Vector2 TilePosition)
+    public bool CanProduce(IStorage ResourceStore, Vector2 TilePosition)
     {
         //TODO: Need to check what workers are on the tile
 
@@ -78,7 +78,7 @@ public class SchoolProduction : ScriptableObject, IProduction
         return false;
     }
 
-    bool Produce(IStorage ResourceStore, Vector2 TilePosition)
+    public bool Produce(IStorage ResourceStore, Vector2 TilePosition)
     {
         bool Produced = CanProduce(ResourceStore, TilePosition);
 
