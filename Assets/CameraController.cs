@@ -2,7 +2,9 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
-	
+
+	private float max_size = 36, min_size = 6;
+
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKey(KeyCode.W))
@@ -21,6 +23,7 @@ public class CameraController : MonoBehaviour {
 		{
 			camera.transform.Translate(Vector3.right);
 		}
-		camera.orthographicSize -= (Input.mouseScrollDelta.y / 5f);
+		camera.orthographicSize -= (Input.mouseScrollDelta.y);
+		camera.orthographicSize = Mathf.Clamp(camera.orthographicSize, min_size, max_size);
 	}
 }
