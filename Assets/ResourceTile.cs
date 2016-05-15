@@ -9,14 +9,13 @@ public class ResourceTile : Entity {
 	private bool depleted = false;
 	private int time_since_last_replenish = 0;
 	private int time_to_replenish = 10;
-	private Vector2 pos;
 	private Vector2 dims = new Vector2(1, 1);
 
 	public void Initialise(e_Resource resource, Vector2 pos)
 	{
 		this.resource = resource;
 
-		this.pos = new Vector2 (pos.x, pos.y);
+		this.Position = new Vector2 (pos.x, pos.y);
 	}
 
 	public e_Resource Deplete()

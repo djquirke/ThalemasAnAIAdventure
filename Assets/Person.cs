@@ -21,7 +21,7 @@ public enum ToolType
 	NONE
 }
 
-public class Person : IStorage
+public class Person : Entity, IStorage
 {
 	private bool alive;
 	private PersonType type;
@@ -114,5 +114,18 @@ public class Person : IStorage
 	private void UpdateStorageSize()
 	{
 		storage = has_cart ? new Storage(5, 5) : new Storage(1, 1);
+	}
+
+	//TODO: add gametick functionality here
+	public override void GameTick ()
+	{
+		base.GameTick ();
+	}
+
+	//2 people are equal if they are the same type
+	public override bool Equals (object obj)
+	{
+		Person other = obj as Person;
+		return other.Type == this.Type;
 	}
 }

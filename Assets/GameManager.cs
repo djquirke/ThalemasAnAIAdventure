@@ -5,40 +5,13 @@ using System.Diagnostics;
 using System.Text;
 using System.IO;  
 
-//TODO: rename to tiletype, much more suitable
-enum e_Tile
-{
-	TERRAIN,
-	OOB
-}
-
-struct s_Tile
-{
-	e_Tile tile_type;
-	Vector2 pos;
-
-	public s_Tile(e_Tile type, Vector2 pos)
-	{
-		tile_type = type;
-		this.pos = pos;
-	}
-
-	public e_Tile getTileType() {
-		return tile_type;
-	}
-
-	public Vector2 getPos() {
-		return pos;
-	}
-}
-
 public class GameManager : MonoBehaviour {
 
 	public string map;
 	public GameObject terrain_prefab;
 	public GameObject oob_prefab;
 
-	private List<s_Tile> tiles;
+	private static Dictionary<Vector2, Tile> tiles;
 	private Stopwatch last_game_tick = new Stopwatch();
 	private static int GAME_TICK = 500;
 	private int map_width, map_height;
@@ -53,7 +26,7 @@ public class GameManager : MonoBehaviour {
 		try
 		{
 			string line;
-			tiles = new List<s_Tile>();
+			tiles = new Dictionary<Vector2, Tile>();
 
 			StreamReader theReader = new StreamReader(file, Encoding.Default);
 
@@ -76,14 +49,16 @@ public class GameManager : MonoBehaviour {
 							{
 								if(entries[i] == '.')
 								{
-									s_Tile temp = new s_Tile(e_Tile.TERRAIN, new Vector2(i, counter));
-									tiles.Add(temp);
+									Vector2 pos = new Vector2(i, counter);
+									Tile temp = new Tile(e_TileType.TERRAIN, pos);
+									tiles.Add(pos, temp);
 									Instantiate(terrain_prefab, new Vector3(i, 0.5f, counter), new Quaternion());
 								}
 								else if (entries[i] == 'T')
 								{
-									s_Tile temp = new s_Tile(e_Tile.OOB, new Vector2(i, counter));
-									tiles.Add(temp);
+									Vector2 pos = new Vector2(i, counter);
+									Tile temp = new Tile(e_TileType.OOB, pos);
+									tiles.Add(pos, temp);
 									Instantiate(oob_prefab, new Vector3(i, 0.5f, counter), new Quaternion());
 								}
 							}
@@ -113,7 +88,6 @@ public class GameManager : MonoBehaviour {
 
 		if(last_game_tick.ElapsedMilliseconds >= GAME_TICK)
 		{
-			//UnityEngine.Debug.Log("Tick");
 			last_game_tick.Reset();
 			last_game_tick.Start();
 
@@ -123,5 +97,23 @@ public class GameManager : MonoBehaviour {
 				entity.GameTick();
 			}
 		}
+	}
+
+	//Find all entities at given position
+	public static List<Entity> EntitiesAtPos(Vector2 pos)
+	{
+		return tiles[pos].Entities;
+	}
+
+	///Find all entities on a set of tiles
+	///Some buildings are bigger than 1 tile
+	public static List<Entity> EntitiesOnTiles(List<Tile> these_tiles)
+	{
+		List<Entity> ret = new List<Entity>();
+		foreach(Tile t in these_tiles)
+		{
+			ret.AddRange(tiles[t.Pos].Entities);
+		}
+		return ret;
 	}
 }

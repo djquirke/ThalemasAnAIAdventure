@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BuildingSite : Entity, IStorage
 {
     public BuildingBlueprint BuildingBlueprints;
-    public Vector2 Position = Vector2.zero;
 
     public bool BuildingStarted = false;
     private int TicksSinceBuildingStarted = 0;
-
 
     private Storage m_Store;
     public Storage Store
@@ -36,13 +35,32 @@ public class BuildingSite : Entity, IStorage
     {
         bool HaveWorkers = true;
 
+		List<PersonType> peopleInBuilding = GetPeopleInBuilding();
+
         foreach(WorkerRequirement WorkersNeeded in BuildingBlueprints.WorkersRequired)
         {
             //TODO: Have to have way to check which persons are on the building sites tile
+			if(!peopleInBuilding.Contains(WorkersNeeded.Person)) HaveWorkers = false;
+
         }
 
         return HaveWorkers;
     }
+
+	List<PersonType> GetPeopleInBuilding()
+	{
+		//There may be a better way to do this?
+		List<Entity> inBuilding = GameManager.EntitiesOnTiles(tiles);
+		List<PersonType> peopleInBuilding = new List<PersonType>();
+		foreach(Entity entity in inBuilding)
+		{
+			if(entity is Person)
+			{
+				peopleInBuilding.Add((entity as Person).Type);
+			}
+		}
+		return peopleInBuilding;
+	}
 
     public bool HasEnoughRoom()
     {

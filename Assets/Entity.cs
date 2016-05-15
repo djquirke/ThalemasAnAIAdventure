@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Entity {
 //
@@ -12,6 +13,10 @@ public class Entity {
 //	void Update () {
 //	
 //	}
+
+	//the tiles that the entity covers
+	protected List<Tile> tiles = new List<Tile>();
+	public Vector2 Position = Vector2.zero;
 
 	public virtual void GameTick() {}
 	public virtual void Update() {}
