@@ -16,6 +16,7 @@ public class ResourceTile : Entity {
 		this.resource = resource;
 
 		this.Position = new Vector2 (pos.x, pos.y);
+		this.entityType = e_EntityType.RESOURCE;
 	}
 
 	public e_Resource Deplete()

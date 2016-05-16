@@ -24,7 +24,7 @@ public enum ToolType
 public class Person : Entity, IStorage
 {
 	private bool alive;
-	private PersonType type;
+	private PersonType personType;
 	private ToolType tool;
 	private Storage storage;
 	private bool has_cart;
@@ -39,15 +39,16 @@ public class Person : Entity, IStorage
 	public Person()
 	{
 		alive = true;
-		type = PersonType.LABOURER;
+		personType = PersonType.LABOURER;
 		tool = ToolType.NONE;
 		storage = new Storage (1, 1);
+		entityType = e_EntityType.PERSON;
 	}
 
 	public PersonType Type 
 	{ 
-		get { return type; }
-		set { type = value; }
+		get { return personType; }
+		set { personType = value; }
 	}
 
 	public bool Alive 
@@ -84,11 +85,12 @@ public class Person : Entity, IStorage
 		
 	public void Attack(Person other)
 	{
-		if ( type == PersonType.RIFLEMAN ) 
+		if ( personType == PersonType.RIFLEMAN ) 
 		{
 		  	if( other.Type != PersonType.RIFLEMAN ){
 				//100% chance of killing other person
 				other.Alive = false;
+				//TODO: remove dead person from scene
 			}
 			else
 			{

@@ -2,22 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum e_EntityType
+{
+	BUILDING,
+	BUILDING_SITE,
+	PERSON,
+	RESOURCE
+}
+
 public class Entity {
-//
-//	// Use this for initialization
-//	void Start () {
-//	
-//	}
-//	
-//	// Update is called once per frame
-//	void Update () {
-//	
-//	}
 
 	//the tiles that the entity covers
-	protected List<Tile> tiles = new List<Tile>();
+	protected List<Vector2> tiles = new List<Vector2>();
+	protected e_EntityType entityType;
+	//top left position
 	public Vector2 Position = Vector2.zero;
 
 	public virtual void GameTick() {}
 	public virtual void Update() {}
+
+	public e_EntityType EntityType
+	{
+		get {return entityType;}
+	}
 }
