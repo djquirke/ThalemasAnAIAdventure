@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Flags]
 public enum e_Resource
 {
-	COAL,
-	ORE,
-	WOOD,
-	STONE,
-	TIMBER,
-	IRON,
-	RIFLE,
-	CART,
-	AXE,
-	NONE
+    NONE    = 0,
+	COAL    = 1,
+	ORE     = 2,
+	WOOD    = 4,
+	STONE   = 8,
+	TIMBER  = 16,
+	IRON    = 32,
+	RIFLE   = 64,
+	CART    = 128,
+	AXE     = 256,
 }
 
 public class Resource : MonoBehaviour {

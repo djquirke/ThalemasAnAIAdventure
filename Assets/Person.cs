@@ -1,24 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Flags]
 public enum PersonType 
 {
-	LABOURER,
-	TEACHER, 
-	LUMBERJACK, 
-	MINER, 
-	BLACKSMITH,
-	CARPENTER,
-	TRADER, 
-	RIFLEMAN
+	LABOURER    = 1,
+	TEACHER     = 2, 
+	LUMBERJACK  = 4, 
+	MINER       = 8, 
+	BLACKSMITH  = 16,
+	CARPENTER   = 32,
+	TRADER      = 64, 
+	RIFLEMAN    = 128,
 };
 
 public enum ToolType
 {
+    NONE,
 	AXE,
 	CART, 
 	RIFFLE,
-	NONE
 }
 
 public class Person : Entity, IStorage

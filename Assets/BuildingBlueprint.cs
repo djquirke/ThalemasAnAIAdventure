@@ -7,7 +7,7 @@ using UnityEditor;
 #endif
 
 [System.Serializable]
-public class ResourceRequirement
+public class ResourceRequirement : GUI_Util.ICustomEditor
 {
     public int RequiredAmount;
     public e_Resource RequiredResource;
@@ -19,7 +19,7 @@ public class ResourceRequirement
     }
 
 #if UNITY_EDITOR
-    public void ResourceRequirementsEditor()
+    public void OnEditor()
     {
         RequiredAmount = EditorGUILayout.IntField("Number Required", RequiredAmount);
         RequiredResource = (e_Resource)EditorGUILayout.EnumPopup("Resource Type", RequiredResource);
@@ -27,8 +27,9 @@ public class ResourceRequirement
 #endif
 }
 
+
 [System.Serializable]
-public class WorkerRequirement
+public class WorkerRequirement : GUI_Util.ICustomEditor
 {
     public int RequiredWorkers;
     public PersonType Person;
@@ -40,66 +41,13 @@ public class WorkerRequirement
     }
 
 #if UNITY_EDITOR
-    public void WorkerRequirementsEditor()
+    public void OnEditor()
     {
         RequiredWorkers = EditorGUILayout.IntField("Number Required", RequiredWorkers);
-        Person = (PersonType)EditorGUILayout.EnumPopup("Woker Type", Person);
+        Person = (PersonType)EditorGUILayout.EnumPopup("Worker Type", Person);
     }
 #endif
 
-}
-
-public interface IProduction
-{
-    int TimeToProduce
-    {
-        get;
-    }
-
-    //TODO: Tiles have to be done by something other than positiion
-    bool CanProduce(IStorage ResourceStore, Vector2 TilePosition);
-
-    bool Produce(IStorage ResourceStore, Vector2 TilePosition);
-}
-
-public class SchoolProduction : ScriptableObject, IProduction
-{
-    public int TimeRequired = 10;
-    public int TimeToProduce
-    {
-        get { return TimeRequired; }
-    }
-
-    public bool CanProduce(IStorage ResourceStore, Vector2 TilePosition)
-    {
-        //TODO: Need to check what workers are on the tile
-
-        //Then we'll
-        return false;
-    }
-
-    public bool Produce(IStorage ResourceStore, Vector2 TilePosition)
-    {
-        bool Produced = CanProduce(ResourceStore, TilePosition);
-
-        if(Produced)
-        {
-
-        }
-
-        return Produced;
-    }
-}
-
-public class BuildingProduction : ScriptableObject
-{
-    public int TimeToProdcue = 10;
-
-    public List<ResourceRequirement> ResourcesRequired = new List<ResourceRequirement>();
-    public List<WorkerRequirement> WorkersRequired = new List<WorkerRequirement>();
-
-    public List<ResourceRequirement> ResourcesProduced = new List<ResourceRequirement>();
-    
 }
 
 //TODO: Add tiles bitmask, The building action bit (i.e. resource requirements, worker requirements, and then something is produced)
@@ -111,6 +59,45 @@ public class BuildingBlueprint : ScriptableObject
 
     public List<ResourceRequirement> ResourcesRequired = new List<ResourceRequirement>();
     public List<WorkerRequirement> WorkersRequired = new List<WorkerRequirement>();
+
+    public BuildingProductionType BuildingProduces = BuildingProductionType.NONE;
+    
+    public BaseBuildingProduction BuildingProduction
+    {
+        get
+        {
+            BaseBuildingProduction Production = null;
+            switch(BuildingProduces)
+            {
+                case BuildingProductionType.POPULATION:
+                    Production = m_PopulationProduction;
+                    break;
+                case BuildingProductionType.RESOURCE:
+                    Production = m_ResourceProduction;
+                    break;
+                case BuildingProductionType.SKILL:
+                    Production = m_SchoolProduction;
+                    break;
+                case BuildingProductionType.TOOL:
+                    Production = m_ToolProduction;
+                    break;
+            }
+
+            return Production;
+        }
+    }
+
+    [SerializeField][HideInInspector]
+    private SchoolProduction m_SchoolProduction = new SchoolProduction();
+    
+    [SerializeField][HideInInspector]
+    private ResourceProduction m_ResourceProduction = new ResourceProduction();
+    
+    [SerializeField][HideInInspector]
+    private PopulationProduction m_PopulationProduction = new PopulationProduction();
+
+    [SerializeField][HideInInspector]
+    private ToolProduction m_ToolProduction = new ToolProduction();
 
 #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/New Building")]
@@ -131,6 +118,9 @@ public class BuildingRequirementWindowEditor : Editor
 
     private bool ShowResourceList = false;
     private bool ShowPeopleList = false;
+
+    private bool ShowBuildingProduction = false;
+    private bool ShowBuildingRequirements = false;
 
     void Awake()
     {
@@ -154,62 +144,29 @@ public class BuildingRequirementWindowEditor : Editor
         }
 
         m_Req.Dimensions = EditorGUILayout.Vector2Field("Dimensions", m_Req.Dimensions);
-        m_Req.TimeToBuild = EditorGUILayout.IntField("Time To Build", m_Req.TimeToBuild);
 
-        ShowResourceList = EditorGUILayout.Foldout(ShowResourceList, "Required Resources");
+        EditorGUILayout.Separator();
+        ShowBuildingRequirements = EditorGUILayout.Foldout(ShowBuildingRequirements, "Requirements to Build");
 
-        if (ShowResourceList)
+        if (ShowBuildingRequirements)
         {
-            int Size = EditorGUILayout.IntField("Size", m_Req.ResourcesRequired.Count);
+            m_Req.TimeToBuild = EditorGUILayout.IntField("Time To Build", m_Req.TimeToBuild);
 
-            if (Size > m_Req.ResourcesRequired.Count)
-            {
-                //There's definetly a less stupid way of doing this.
-                while (Size > m_Req.ResourcesRequired.Count)
-                {
-                    m_Req.ResourcesRequired.Add(new ResourceRequirement());
-                }
-            }
-            else if(Size < m_Req.ResourcesRequired.Count)
-            {
-                m_Req.WorkersRequired.RemoveRange(Size, m_Req.ResourcesRequired.Count - Size);
-            }
-
-            foreach(ResourceRequirement ResourcesNeeded in m_Req.ResourcesRequired)
-            {
-                EditorGUILayout.Separator();
-                ResourcesNeeded.ResourceRequirementsEditor();
-            }
-            EditorGUILayout.Separator();
+            ShowResourceList = GUI_Util.FoldOutListEditor(m_Req.ResourcesRequired, "Required Resources", ShowResourceList);
+            ShowPeopleList = GUI_Util.FoldOutListEditor(m_Req.WorkersRequired, "Required Workers", ShowPeopleList);
         }
-
-        ShowPeopleList = EditorGUILayout.Foldout(ShowPeopleList, "Required Workers");
-
-        if (ShowPeopleList)
+        EditorGUILayout.Separator();
+        ShowBuildingProduction = EditorGUILayout.Foldout(ShowBuildingProduction, "Building Production");
+        
+        if (ShowBuildingProduction)
         {
-            int Size = EditorGUILayout.IntField("Size", m_Req.WorkersRequired.Count);
+            m_Req.BuildingProduces = (BuildingProductionType)EditorGUILayout.EnumPopup("Building Production Type", m_Req.BuildingProduces);
 
-            if (Size > m_Req.WorkersRequired.Count)
+            if (m_Req.BuildingProduction != null)
             {
-                //There's definetly a less stupid way of doing this.
-                while (Size > m_Req.WorkersRequired.Count)
-                {
-                    m_Req.WorkersRequired.Add(new WorkerRequirement());
-                }
+                m_Req.BuildingProduction.OnEditor();
             }
-            else if (Size < m_Req.WorkersRequired.Count)
-            {
-                m_Req.WorkersRequired.RemoveRange(Size, m_Req.WorkersRequired.Count - Size);
-            }
-
-            foreach(WorkerRequirement WorkersNeeded in m_Req.WorkersRequired)
-            {
-                EditorGUILayout.Separator();
-                WorkersNeeded.WorkerRequirementsEditor();
-            }
-            EditorGUILayout.Separator();
         }
-
     }
 }
 

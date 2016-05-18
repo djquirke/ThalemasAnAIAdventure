@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.IO;  
+using System.IO;
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
 
@@ -191,6 +192,17 @@ public class GameManager : MonoBehaviour {
 		return ret;
 	}
 
+    public static IEnumerable<T> EntitiesOnTiles<T>(List<Vector2> these_tiles) where T : Entity
+    {
+        foreach(Vector2 tile in these_tiles)
+        {
+            foreach(T t in tiles[tile].Entities.OfType<T>())
+            {
+                yield return t;
+            }
+        }
+    }
+
 	public static bool CanBuild(Vector2 topLeft, Vector2 dims)
 	{
 		for(int i = 0; i < dims.x; i++)
@@ -213,12 +225,12 @@ public class GameManager : MonoBehaviour {
 			{
 				Vector2 key = new Vector2(topLeft.x + i, topLeft.y + j);
 				tiles[key].AddEntity(entity);
-				Instantiate(building_site_prefab, new Vector3(key.x, building_height, key.y), new Quaternion());
+				Instantiate(building_site_prefab, new Vector3(key.x, building_height, key.y), Quaternion.identity);
 			}
 		}
 	}
 
-	public static void FinishConstruction(Vector2 topLeft, Vector2 dims, string name)
+	public static void FinishConstruction(Vector2 topLeft, Vector2 dims, string name, Building Build)
 	{
 		GameObject[] constructionTiles = GameObject.FindGameObjectsWithTag("ConstructionTile");
 
@@ -238,8 +250,8 @@ public class GameManager : MonoBehaviour {
 						//update tiles with what it now contains
 						Vector2 key = new Vector2(topLeft.x + i, topLeft.y + j);
 						tiles[key].RemoveEntity(e_EntityType.BUILDING_SITE);
-						Building b = new Building();
-						tiles[key].AddEntity(b);
+
+						tiles[key].AddEntity(Build);
 					}
 				}
 			}

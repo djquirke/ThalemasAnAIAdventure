@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class BuildingSite : Entity, IStorage
 {
@@ -35,39 +36,25 @@ public class BuildingSite : Entity, IStorage
     {
         bool HaveWorkers = true;
 
-		List<PersonType> peopleInBuilding = GetPeopleInBuilding();
+        IEnumerable<Person> peopleInBuilding = GameManager.EntitiesOnTiles<Person>(tiles);
 
         foreach(WorkerRequirement WorkersNeeded in BuildingBlueprints.WorkersRequired)
         {
-            //TODO: Have to have way to check which persons are on the building sites tile
-			//this will tell you if the required workers are on site but doesn't store the
-			//actual person class, wouldn't take much of a change if you need access to this info
-			if(!peopleInBuilding.Contains(WorkersNeeded.Person)) HaveWorkers = false;
-
+            if(peopleInBuilding.Count(P => P.Type == WorkersNeeded.Person) < WorkersNeeded.RequiredWorkers)
+            {
+                HaveWorkers = false;
+                break;
+            }
         }
 
         return HaveWorkers;
     }
 
-	List<PersonType> GetPeopleInBuilding()
-	{
-		//There may be a better way to do this?
-		List<Entity> inBuilding = GameManager.EntitiesOnTiles(tiles);
-		List<PersonType> peopleInBuilding = new List<PersonType>();
-		foreach(Entity entity in inBuilding)
-		{
-			if(entity is Person)
-			{
-				peopleInBuilding.Add((entity as Person).Type);
-			}
-		}
-		return peopleInBuilding;
-	}
 
     public bool HasEnoughRoom()
     {
         //TODO: Have some way of checking the tiles around building site
-        //Building site will be be top left corner of building
+        //Building site will be top left corner of building
 
 		//TODO: need to know which position to want to start building, replace the (5, 5) vector with top left pos of building
 		return GameManager.CanBuild(new Vector2(5, 5), BuildingBlueprints.Dimensions);
@@ -91,14 +78,15 @@ public class BuildingSite : Entity, IStorage
     {
         if(BuildingStarted)
         {
-            //TODO: Probalby do a check for required resources and workers here as well, Any resources stored will be deleted once building is complete
+            //TODO: Probably do a check for required resources and workers here as well, Any resources stored will be deleted once building is complete
             ++TicksSinceBuildingStarted;
 
             if(TicksSinceBuildingStarted >= BuildingBlueprints.TimeToBuild)
             {
                 //TODO: Building Built, remove site and replace with created building
 				//use GameManager.FinishConstruction(top left position, BuildingBlueprints.Dimensions, BuildingBlueprints.name)
-
+                Building Built = new Building(BuildingBlueprints);
+                GameManager.FinishConstruction(this.Position, BuildingBlueprints.Dimensions, BuildingBlueprints.name, Built);
             }
         }
     }
@@ -107,7 +95,7 @@ public class BuildingSite : Entity, IStorage
 
 public class Building : Entity, IStorage
 {
-    private Storage m_Store = new Storage(10, 10);
+    private Storage m_Store = new Storage(1000, 10000);
     public Storage Store
     {
         get
@@ -116,10 +104,39 @@ public class Building : Entity, IStorage
         }
     }
 
-    public Vector2 Dimensions = Vector2.zero;
+    private Vector2 m_Dimensions = Vector2.zero;
+    public Vector2 Dimensions
+    {
+        get
+        {
+            return m_Dimensions;
+        }
+    }
 
-	public Building()
+    private BuildingProductionType m_BuildingType;
+    public BuildingProductionType BuildingType
+    {
+        get
+        {
+            return m_BuildingType;
+        }
+    }
+
+    private BaseBuildingProduction m_BuildingProduction;
+    public BaseBuildingProduction BuildingProduction
+    {
+        get
+        {
+            return m_BuildingProduction;
+        }
+    }
+
+	public Building(BuildingBlueprint Blueprints)
 	{
+        m_Dimensions = Blueprints.Dimensions;
+        m_BuildingType = Blueprints.BuildingProduces;
+        m_BuildingProduction = Blueprints.BuildingProduction;
+
 		entityType = e_EntityType.BUILDING;
 	}
 

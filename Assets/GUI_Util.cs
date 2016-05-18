@@ -39,6 +39,43 @@ public class GUI_Util
         Selection.activeObject = Obj;
     }
 
+    public static bool FoldOutListEditor<T>(List<T> ListToEdit, string FoldoutLabel, bool ShowFoldout) where T:ICustomEditor, new()
+    {
+        ShowFoldout = EditorGUILayout.Foldout(ShowFoldout, FoldoutLabel);
+
+        if (ShowFoldout)
+        {
+            int Size = EditorGUILayout.IntField("Size", ListToEdit.Count);
+
+            if (Size > ListToEdit.Count)
+            {
+                while (Size > ListToEdit.Count)
+                {
+                    ListToEdit.Add(new T());
+                }
+            }
+            else if (Size < ListToEdit.Count)
+            {
+                ListToEdit.RemoveRange(Size, ListToEdit.Count - Size);
+            }
+
+            foreach (T t in ListToEdit)
+            {
+                EditorGUILayout.Separator();
+                (t as ICustomEditor).OnEditor();
+            }
+            EditorGUILayout.Separator();
+        }
+
+        return ShowFoldout;
+    }
+
+    public interface ICustomEditor
+    {
+#if UNITY_EDITOR
+        void OnEditor();
+#endif
+    }
 }
 
 
