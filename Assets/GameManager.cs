@@ -6,6 +6,13 @@ using System.Text;
 using System.IO;
 using System.Linq;
 
+[System.Serializable]
+public struct BuildingPrefab
+{
+	public string name;
+	public GameObject prefab;
+}
+
 public class GameManager : MonoBehaviour {
 
 	public string map;
@@ -13,9 +20,11 @@ public class GameManager : MonoBehaviour {
 	public GameObject oob_prefab;
 	public GameObject set_building_site_prefab;
 	public GameObject set_house_prefab;
+	public BuildingPrefab[] set_building_prefabs;
 	public GameObject coal_prefab, ore_prefab, timber_prefab, stone_prefab;
 	public static GameObject building_site_prefab;
 	public static GameObject house_prefab;
+	public static Dictionary<string, GameObject> building_prefabs;
 
 	private Stopwatch last_game_tick = new Stopwatch();
 	private static Dictionary<Vector2, Tile> tiles;
@@ -30,6 +39,10 @@ public class GameManager : MonoBehaviour {
 	{
 		building_site_prefab = set_building_site_prefab;
 		house_prefab = set_house_prefab;
+		building_prefabs = new Dictionary<string, GameObject>();
+		foreach (BuildingPrefab building_prefab in set_building_prefabs) {
+			building_prefabs.Add(building_prefab.name, building_prefab.prefab);
+		}
 	}
 
 	// Use this for initialization
@@ -263,14 +276,12 @@ public class GameManager : MonoBehaviour {
 	private static void SpawnBuilding(string name, Vector2 pos)
 	{
 		Vector3 spawnPos = new Vector3(pos.x, building_height, pos.y);
-		//TODO: maybe store enum for building type instead?
-		switch (name) {
-		case "House":
-			Instantiate(house_prefab, spawnPos, new Quaternion());
-			break;
-			//TODO: Implement other building types
-		default:
-			break;
-		}
+		Instantiate(building_prefabs[name], spawnPos, Quaternion.identity);
+	}
+
+	public static Dictionary<Vector2, Tile> WorldState
+	{
+		get {return tiles;}
+		set {tiles = value;}
 	}
 }
