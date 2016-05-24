@@ -1,0 +1,7 @@
+; Time 0.15
+; ParsingTime
+; NrActions 2
+; MakeSpan 2
+; MetricValue 
+0: (MOVE PERSON LOCATION1 LOCATION2 ) [1]
+1: (BUILDTURFHUT PERSON LOCATION2 ) [1]
