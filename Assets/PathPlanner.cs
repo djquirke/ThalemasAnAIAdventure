@@ -34,6 +34,58 @@ static public class PathPlanner
         }
     }
 	
+    public class Task<T>
+    {
+        public T ReturnValue
+        {
+            get;
+            set;
+        }
+
+        public bool Finished
+        {
+            get;
+            set;
+        }
+
+        public System.Threading.Thread TaskThread
+        {
+            get;
+            set;
+        }
+    }
+
+    static public Task<Solution> SolveAsync(Tile Start, Tile Goal, IEvaluation Eval)
+    {
+        Solution Solved = PreCalculatedSolutions.Find(S => S.Start.Pos == Start.Pos && S.End.Pos == Goal.Pos);
+        Task<Solution> AwaitTask = new Task<Solution>();
+
+        if(Solved != null)
+        {
+            AwaitTask.TaskThread = new System.Threading.Thread(new System.Threading.ThreadStart(
+                () => 
+                    AStarAsync(Start, Goal, Eval, AwaitTask)
+                    ));
+
+            AwaitTask.TaskThread.Start();
+        }
+        else
+        {
+            AwaitTask.Finished = true;
+            AwaitTask.ReturnValue = Solved;
+        }
+
+        return AwaitTask;
+    }
+
+    static void AStarAsync(Tile Start, Tile Goal, IEvaluation Eval, Task<Solution> SolveTask)
+    {
+        Solution Solved = SolveASTAR(Start, Goal, Eval);
+
+        SolveTask.ReturnValue = Solved;
+        SolveTask.Finished = true;
+    }
+
     public interface IEvaluation
     {
         float Evaluate(Tile CurPosition, Tile Goal);
@@ -48,6 +100,8 @@ static public class PathPlanner
     }
 
     static public ManhattanHueristic ManhattanHueristicEvaluation = new ManhattanHueristic();
+
+    
 
     static public Solution SolveImmediate(Tile Start, Tile Goal, IEvaluation Eval)
     {
