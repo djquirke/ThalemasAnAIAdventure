@@ -1,0 +1,253 @@
+//////////////////////////////////////////////////////////////////
+//BUILD TURFHUT
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	resource - resource
+	building - building
+	location1 - location
+	location2 - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location1)
+			(is-labourer person)
+			(is-free location2)
+	)
+  
+  (:goal 	
+		(and
+			(built-turfhut location2)
+		)
+	)
+)
+/////////////////////////////////////////////////////////////////
+//TIMBER
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	teacher - person
+	resource - resource
+	quarry - building
+	school - building
+	quarrylocation - location
+	schoollocation - location
+	teacherlocation - location
+	forest - location
+	location - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location)
+			(is-labourer person)
+			(at teacher teacherlocation)
+			(is-teacher teacher)
+			
+			(is-quarry quarry)
+			(building-at quarry quarrylocation)
+			
+			(has-resource forest)
+			
+			(is-school school)
+			(building-at school schoollocation)
+	)
+  
+  (:goal 	
+		(and
+			(got-timber person)
+		)
+	)
+)
+/////////////////////////////////////////////////////////////////////
+//BUILD BARRACKS
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	teacher - person
+	carpenter - person
+	resource - resource
+	quarry - building
+	school - building
+	smelter - building
+	sawmill - building
+	quarrylocation - location
+	schoollocation - location
+	teacherlocation - location
+	carpenterlocation - location
+	smelterlocation - location
+	sawmilllocation - location
+	barrackslocation - location
+	forest - location
+	location - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location)
+			(is-labourer person)
+			(at teacher teacherlocation)
+			(is-teacher teacher)
+			(at carpenter carpenterlocation)
+			(is-carpenter carpenter)
+			
+			(is-quarry quarry)
+			(building-at quarry quarrylocation)
+			
+			(is-smelter smelter)
+			(building-at smelter smelterlocation)
+			
+			(is-sawmill sawmill)
+			(building-at sawmill sawmilllocation)
+			
+			(has-resource forest)
+			
+			(is-school school)
+			(building-at school schoollocation)
+	)
+  
+  (:goal 	
+		(and
+			(built-barracks barrackslocation)
+		)
+	)
+)
+/////////////////////////////////////////////////////////////////////
+//RIFFLEMAN
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	teacher - person
+	resource - resource
+	school - building
+	barracks - building
+	schoollocation - location
+	teacherlocation - location
+	barrackslocation - location
+	forest - location
+	location - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location)
+			(is-labourer person)
+			(at teacher teacherlocation)
+			(is-teacher teacher)
+				
+			(is-barracks barracks)
+			(building-at barracks barrackslocation)
+			
+			(is-school school)
+			(building-at school schoollocation)
+	)
+  
+  (:goal 	
+		(and
+			(is-riffleman person)
+		)
+	)
+)
+/////////////////////////////////////////////////////////////////////
+//ATTACKING
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	teacher - person
+	resource - resource
+	school - building
+	barracks - building
+	schoollocation - location
+	teacherlocation - location
+	barrackslocation - location
+	forest - location
+	location - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location)
+			(is-labourer person)
+			(at teacher teacherlocation)
+			(is-teacher teacher)
+				
+			(is-barracks barracks)
+			(building-at barracks barrackslocation)
+			
+			(is-school school)
+			(building-at school schoollocation)
+	)
+  
+  (:goal 	
+		(and
+			(attacking person)
+		)
+	)
+)
+/////////////////////////////////////////////////////////////////////
+//BUILD BARRACKS
+(define (problem rtg-prob1)
+  (:domain rtg)
+  	
+  (:objects 
+	person - person
+	teacher - person
+	carpenter - person
+	resource - resource
+	quarry - building
+	school - building
+	smelter - building
+	sawmill - building
+	quarrylocation - location
+	schoollocation - location
+	teacherlocation - location
+	carpenterlocation - location
+	smelterlocation - location
+	sawmilllocation - location
+	barrackslocation - location
+	forest - location
+	location - location
+	tool - tool
+	)
+
+  (:init 	
+			(at person location)
+			(is-labourer person)
+			(at teacher teacherlocation)
+			(is-teacher teacher)
+			(at carpenter carpenterlocation)
+			(is-carpenter carpenter)
+			
+			(is-quarry quarry)
+			(building-at quarry quarrylocation)
+			
+			(is-smelter smelter)
+			(building-at smelter smelterlocation)
+			
+			(is-sawmill sawmill)
+			(building-at sawmill sawmilllocation)
+			
+			(has-resource forest)
+			
+			(is-school school)
+			(building-at school schoollocation)
+	)
+  
+  (:goal 	
+		(and
+			(built-barracks barrackslocation)
+		)
+	)
+)
+
