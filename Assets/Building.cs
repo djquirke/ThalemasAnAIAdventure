@@ -131,6 +131,19 @@ public class Building : Entity, IStorage
         }
     }
 
+    public bool Produce()
+    {
+        IEnumerable<Person> PersonsOnSite = GameManager.EntitiesOnTiles<Person>(tiles);
+        bool CanProduce = BuildingProduction.CanProduce(PersonsOnSite, this.Store);
+
+        if(CanProduce)
+        {
+            BuildingProduction.Produce(PersonsOnSite, this.Store);
+        }
+
+        return CanProduce;
+    }
+
 	public Building(BuildingBlueprint Blueprints)
 	{
         m_Dimensions = Blueprints.Dimensions;

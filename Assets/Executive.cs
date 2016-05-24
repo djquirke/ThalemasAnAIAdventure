@@ -1,6 +1,117 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
+interface IAction
+{
+    Tile Position
+    {
+        get;
+    }
+
+    //Agent will call Action every turn once they're on Position
+    //Action will return true when the agent can return to idling
+    bool Action(Person P);
+}
+
+class PatrolAction : IAction
+{
+    public Tile Position
+    {
+        get;
+        private set;
+    }
+
+    public Tile PatrolStart
+    {
+        get;
+        private set;
+    }
+
+    public Tile PatrolEnd
+    {
+        get;
+        private set;
+    }
+
+    public PatrolAction(Tile Start, Tile End)
+    {
+        Position = Start;
+
+        PatrolStart = Start;
+        PatrolEnd = End;
+    }
+
+    public bool Action(Person P)
+    {
+        if(Position.Equals(PatrolStart))
+        {
+            Position = PatrolEnd;
+        }
+        else
+        {
+            Position = PatrolStart;
+        }
+
+        //Executive must explicitly tell this agent to stop patrolling by setting its action to null or something else
+        return false;
+    }
+}
+
+class MiningAction : IAction
+{
+    public Tile Position
+    {
+        get;
+        private set;
+    }
+
+    public Building Mine
+    {
+        get;
+        private set;
+    }
+
+    public int AmountToMine
+    {
+        get;
+        private set;
+    }
+
+    private int TicksSinceStart = 0;
+
+    public MiningAction(Building Mine, int AmountToMine)
+    {
+        this.Position = GameManager.tiles[Mine.Position];
+        this.Mine = Mine;
+        this.AmountToMine = AmountToMine;
+    }
+
+    public bool Action(Person P)
+    {
+        bool Done = false;
+
+        if(Position.Entities.Find(X => Object.ReferenceEquals(P, X)) != null)
+        {
+            ++TicksSinceStart;
+            if(TicksSinceStart >= Mine.BuildingProduction.TimeToProduce)
+            {
+                TicksSinceStart = 0;
+               if(Mine.Produce())
+               {
+                   --AmountToMine;
+                   if(AmountToMine <= 0)
+                   {
+                       Done = true;
+                   }
+               }
+            }
+        }
+
+        return Done;
+    }
+}
 
 struct Action
 {
@@ -16,17 +127,24 @@ struct Action
 	}
 }
 
+
 public class Executive : MonoBehaviour {
 
 	//Store a queue of actions
-	Queue actions;
+	Queue<Action> actions;
 	Action current;
 	Dictionary<Vector2, Tile> world_state;
 
+    Queue<Action> QueuedActions = new Queue<Action>();
+
 	public void Initialise()
 	{
-		actions = new Queue();
+		actions = new Queue<Action>();
+        
 		world_state = GameManager.WorldState;
+
+        
+
 		//TODO: replace with asking task planner to generate plan to build a barracks
 		//move to stone
 		//gather stone
