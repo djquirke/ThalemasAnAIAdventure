@@ -18,8 +18,10 @@ public class GameManager : MonoBehaviour {
 	public static GameObject house_prefab;
 
 	private Stopwatch last_game_tick = new Stopwatch();
-	private static Dictionary<Vector2, Tile> tiles;
-	private static int GAME_TICK = 500;
+	
+    public static Dictionary<Vector2, Tile> tiles;
+	
+    private static int GAME_TICK = 500;
 	private static int map_width, map_height;
 	private static float floor_height = 0.5f;
 	private static float building_height = 0.6f;
@@ -84,6 +86,11 @@ public class GameManager : MonoBehaviour {
 				map_height = counter - 1;
 				theReader.Close();
 			}
+
+            foreach(KeyValuePair<Vector2, Tile> KVP in tiles)
+            {
+                KVP.Value.InitiliseSurroundingTiles();
+            }
 
 			SpawnRandomResources();
 
