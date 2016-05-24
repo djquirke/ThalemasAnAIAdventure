@@ -99,8 +99,16 @@ static public class PathPlanner
         }
     }
 
-    static public ManhattanHueristic ManhattanHueristicEvaluation = new ManhattanHueristic();
+    public class ChebyshevHueristic : IEvaluation
+    {
+        public float Evaluate(Tile CurPosition, Tile Goal)
+        {
+            return Mathf.Max(Mathf.Abs(CurPosition.Pos.x - Goal.Pos.x), Mathf.Abs(CurPosition.Pos.y - Goal.Pos.y));
+        }
+    }
 
+    static public ManhattanHueristic ManhattanHueristicEvaluation = new ManhattanHueristic();
+    static public ChebyshevHueristic ChebyshevHueristicEvaluation = new ChebyshevHueristic();
     
 
     static public Solution SolveImmediate(Tile Start, Tile Goal, IEvaluation Eval)
